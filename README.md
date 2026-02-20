@@ -50,7 +50,17 @@ This system helps reduce manual errors and supports digital healthcare record ma
 ---
 
 ## 📂 Project Structure
-prescription-ocr/---
+prescription-ocr/
+prescription-ocr/
+│
+├── backend/ # Flask backend API
+├── frontend/ # React frontend
+├── dataset/ # Training datasets
+├── models/ # Trained ML models
+├── train_models.py # Model training script
+├── rxscan-ai-demo.html # Demo page
+└── README.md
+---
 
 ## ⚙️ Installation & Setup
 
