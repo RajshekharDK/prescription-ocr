@@ -1,0 +1,51 @@
+id,raw_text,medicine_name,dosage,frequency,duration,doctor_name,patient_name,date,diagnosis,instructions,confidence_score
+1,"Tab Amoxicillin 500mg BD x 5 days","Amoxicillin","500mg","Twice Daily","5 days","Dr. R. Sharma","Ravi Kumar","2024-01-10","Bacterial Infection","Take after meals",0.92
+2,"Cap Omeprazole 20mg OD before food","Omeprazole","20mg","Once Daily","30 days","Dr. P. Mehta","Priya Singh","2024-01-11","GERD","Take 30 mins before breakfast",0.88
+3,"Tab Metformin 500mg TDS with food","Metformin","500mg","Thrice Daily","Ongoing","Dr. A. Nair","Arjun Patel","2024-01-12","Type 2 Diabetes","Monitor blood sugar weekly",0.91
+4,"Syp Azithromycin 200mg/5ml 1 tsp OD x 3 days","Azithromycin","200mg/5ml","Once Daily","3 days","Dr. S. Rao","Sneha Reddy","2024-01-13","Throat Infection","Complete full course",0.85
+5,"Tab Atorvastatin 10mg HS","Atorvastatin","10mg","At Bedtime","Ongoing","Dr. K. Gupta","Kiran Joshi","2024-01-14","Hyperlipidemia","Avoid grapefruit juice",0.89
+6,"Tab Amlodipine 5mg OD","Amlodipine","5mg","Once Daily","Ongoing","Dr. V. Kumar","Vijay Malhotra","2024-01-15","Hypertension","Check BP daily",0.93
+7,"Tab Paracetamol 500mg SOS (max 4 times/day)","Paracetamol","500mg","As Needed","5 days","Dr. R. Sharma","Ritu Agarwal","2024-01-16","Fever/Pain","Do not exceed 4 tabs/day",0.95
+8,"Cap Doxycycline 100mg BD x 7 days","Doxycycline","100mg","Twice Daily","7 days","Dr. M. Iyer","Manish Tiwari","2024-01-17","Acne/Infection","Avoid sun exposure",0.87
+9,"Tab Losartan 50mg OD","Losartan","50mg","Once Daily","Ongoing","Dr. P. Mehta","Pooja Verma","2024-01-18","Hypertension","Monitor kidney function",0.90
+10,"Tab Clopidogrel 75mg OD after food","Clopidogrel","75mg","Once Daily","Ongoing","Dr. A. Nair","Amit Shah","2024-01-19","Cardiac","Do not stop suddenly",0.88
+11,"Tab Pantoprazole 40mg BD before food","Pantoprazole","40mg","Twice Daily","14 days","Dr. S. Rao","Sunita Pillai","2024-01-20","Peptic Ulcer","Take 30 mins before meals",0.91
+12,"Tab Cetirizine 10mg OD at night","Cetirizine","10mg","Once Daily","10 days","Dr. K. Gupta","Kavita Nair","2024-01-21","Allergic Rhinitis","May cause drowsiness",0.94
+13,"Inj Insulin Regular 10 units SC before meals","Insulin Regular","10 units","Before Each Meal","Ongoing","Dr. V. Kumar","Vikram Bose","2024-01-22","Type 1 Diabetes","Store in refrigerator",0.86
+14,"Tab Levothyroxine 50mcg OD empty stomach","Levothyroxine","50mcg","Once Daily","Ongoing","Dr. R. Sharma","Radha Krishnan","2024-01-23","Hypothyroidism","Take 30 mins before breakfast",0.92
+15,"Tab Diclofenac 50mg TDS after food x 5 days","Diclofenac","50mg","Thrice Daily","5 days","Dr. M. Iyer","Mohan Das","2024-01-24","Arthritis Pain","Take with meals, avoid alcohol",0.89
+16,"Tab Sertraline 50mg OD morning","Sertraline","50mg","Once Daily","3 months","Dr. P. Mehta","Preeti Saxena","2024-01-25","Depression","Do not stop abruptly",0.87
+17,"Cap Amoxicillin+Clavulanate 625mg BD x 7d","Amoxicillin+Clavulanate","625mg","Twice Daily","7 days","Dr. A. Nair","Ashok Yadav","2024-01-26","Sinusitis","Take after meals",0.90
+18,"Tab Glimepiride 1mg OD before breakfast","Glimepiride","1mg","Once Daily","Ongoing","Dr. S. Rao","Savita Desai","2024-01-27","Type 2 Diabetes","Monitor for hypoglycemia",0.88
+19,"Syr Ibuprofen 100mg/5ml 5ml TDS","Ibuprofen","100mg/5ml","Thrice Daily","5 days","Dr. K. Gupta","Krishnan Pillai","2024-01-28","Fever/Pain","Give with food",0.93
+20,"Tab Rosuvastatin 20mg OD at night","Rosuvastatin","20mg","Once Daily","Ongoing","Dr. V. Kumar","Vandana Mishra","2024-01-29","Hyperlipidemia","Regular liver function test",0.91
+21,"Tab Metoprolol 25mg BD","Metoprolol","25mg","Twice Daily","Ongoing","Dr. R. Sharma","Rajesh Khanna","2024-01-30","Hypertension/Angina","Do not stop suddenly",0.89
+22,"Tab Fluconazole 150mg single dose","Fluconazole","150mg","Single Dose","1 day","Dr. M. Iyer","Maya Pillai","2024-01-31","Fungal Infection","Single dose only",0.95
+23,"Tab Folic Acid 5mg OD","Folic Acid","5mg","Once Daily","3 months","Dr. P. Mehta","Poonam Sharma","2024-02-01","Pregnancy/Anemia","Safe in pregnancy",0.96
+24,"Tab Pantoprazole 40mg + Domperidone 10mg BD","Pantoprazole+Domperidone","40mg+10mg","Twice Daily","15 days","Dr. A. Nair","Ananya Roy","2024-02-02","GERD+Nausea","Take 30 mins before meals",0.87
+25,"Cap Pregabalin 75mg BD","Pregabalin","75mg","Twice Daily","1 month","Dr. S. Rao","Suresh Babu","2024-02-03","Neuropathic Pain","May cause dizziness",0.88
+26,"Tab Warfarin 5mg OD evening","Warfarin","5mg","Once Daily","Ongoing","Dr. K. Gupta","Kumari Devi","2024-02-04","Atrial Fibrillation","Monitor INR regularly",0.84
+27,"Tab Hydroxychloroquine 200mg BD","Hydroxychloroquine","200mg","Twice Daily","3 months","Dr. V. Kumar","Vinod Tiwari","2024-02-05","Rheumatoid Arthritis","Annual eye check",0.89
+28,"Tab Escitalopram 10mg OD morning","Escitalopram","10mg","Once Daily","3 months","Dr. R. Sharma","Reena Gupta","2024-02-06","Anxiety/Depression","Takes 2-4 weeks for effect",0.90
+29,"Tab Montelukast 10mg OD at bedtime","Montelukast","10mg","Once Daily","1 month","Dr. M. Iyer","Madhuri Krishnan","2024-02-07","Asthma/Allergy","Take at same time daily",0.92
+30,"Tab Vitamin D3 60000 IU once weekly","Vitamin D3","60000 IU","Once Weekly","3 months","Dr. P. Mehta","Prakash Jain","2024-02-08","Vitamin D Deficiency","Take with meal containing fat",0.94
+31,"Tab Telmisartan 40mg OD","Telmisartan","40mg","Once Daily","Ongoing","Dr. A. Nair","Anand Bhat","2024-02-09","Hypertension","Monitor renal function",0.91
+32,"Cap Gabapentin 300mg TDS","Gabapentin","300mg","Thrice Daily","1 month","Dr. S. Rao","Sheela Menon","2024-02-10","Neuropathic Pain","Avoid driving",0.87
+33,"Tab Aspirin 75mg OD after food","Aspirin","75mg","Once Daily","Ongoing","Dr. K. Gupta","Kartik Verma","2024-02-11","Cardiac Prevention","Take with food",0.95
+34,"Neb Salbutamol 2.5mg SOS","Salbutamol","2.5mg","As Needed","Ongoing","Dr. V. Kumar","Vimal Patel","2024-02-12","Asthma/COPD","Use spacer device",0.88
+35,"Tab Ranitidine 150mg BD","Ranitidine","150mg","Twice Daily","2 weeks","Dr. R. Sharma","Ranjit Singh","2024-02-13","Peptic Ulcer","Take before meals",0.90
+36,"Cap Iron+Folic Acid 100mg OD","Iron+Folic Acid","100mg","Once Daily","3 months","Dr. M. Iyer","Meera Nair","2024-02-14","Iron Deficiency Anemia","Take with Vitamin C",0.93
+37,"Tab Sitagliptin 100mg OD","Sitagliptin","100mg","Once Daily","Ongoing","Dr. P. Mehta","Pradeep Kumar","2024-02-15","Type 2 Diabetes","Monitor HbA1c quarterly",0.89
+38,"Tab Bisoprolol 2.5mg OD","Bisoprolol","2.5mg","Once Daily","Ongoing","Dr. A. Nair","Alok Mishra","2024-02-16","Heart Failure","Monitor heart rate",0.91
+39,"Oint Mupirocin 2% apply TDS x 5 days","Mupirocin","2%","Thrice Daily","5 days","Dr. S. Rao","Sarita Joshi","2024-02-17","Skin Infection","Apply thin layer",0.94
+40,"Tab Aceclofenac 100mg BD after food","Aceclofenac","100mg","Twice Daily","5 days","Dr. K. Gupta","Keerthi Reddy","2024-02-18","Musculoskeletal Pain","Take with meals",0.90
+41,"Tab Spironolactone 25mg OD","Spironolactone","25mg","Once Daily","1 month","Dr. V. Kumar","Vasantha Rao","2024-02-19","Edema/Heart Failure","Monitor potassium",0.88
+42,"Tab Tramadol 50mg SOS (max BD)","Tramadol","50mg","As Needed","5 days","Dr. R. Sharma","Ratan Lal","2024-02-20","Moderate Pain","Avoid driving, avoid alcohol",0.86
+43,"Tab Olanzapine 5mg OD at night","Olanzapine","5mg","Once Daily","3 months","Dr. M. Iyer","Manoj Pillai","2024-02-21","Schizophrenia/Bipolar","Monitor weight and glucose",0.87
+44,"Tab Carvedilol 3.125mg BD","Carvedilol","3.125mg","Twice Daily","Ongoing","Dr. P. Mehta","Padma Subramaniam","2024-02-22","Heart Failure","Take with food",0.90
+45,"Tab Lisinopril 5mg OD","Lisinopril","5mg","Once Daily","Ongoing","Dr. A. Nair","Aruna Bose","2024-02-23","Hypertension/Heart Failure","Monitor cough side effect",0.91
+46,"Cap Methylprednisolone 8mg BD x 5 days","Methylprednisolone","8mg","Twice Daily","5 days","Dr. S. Rao","Srikanth Pillai","2024-02-24","Inflammation","Do not stop abruptly",0.88
+47,"Tab Chlorpheniramine 4mg TDS","Chlorpheniramine","4mg","Thrice Daily","5 days","Dr. K. Gupta","Kaveri Sharma","2024-02-25","Allergic Reaction","Causes drowsiness",0.93
+48,"Drop Ciprofloxacin 0.3% 2 drops in eye TDS x 7 days","Ciprofloxacin Eye Drop","0.3%","Thrice Daily","7 days","Dr. V. Kumar","Vineetha Krishnan","2024-02-26","Eye Infection","Do not touch dropper tip to eye",0.89
+49,"Tab Dapagliflozin 10mg OD morning","Dapagliflozin","10mg","Once Daily","Ongoing","Dr. R. Sharma","Ramesh Iyer","2024-02-27","Type 2 Diabetes","Stay hydrated",0.91
+50,"Tab Zolpidem 5mg OD at bedtime","Zolpidem","5mg","Once Daily","2 weeks","Dr. M. Iyer","Mala Srinivas","2024-02-28","Insomnia","Short-term use only, avoid alcohol",0.85

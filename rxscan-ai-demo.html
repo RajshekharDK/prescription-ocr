@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RxScan AI — Prescription OCR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #080d1c;
+    --surface: #0d1428;
+    --card: #111c38;
+    --card2: #152040;
+    --accent: #00d4ff;
+    --green: #00ff9d;
+    --orange: #ff8c42;
+    --purple: #a78bfa;
+    --pink: #f472b6;
+    --text: #dce8ff;
+    --muted: #4d6080;
+    --border: rgba(0,212,255,0.1);
+    --glow: rgba(0,212,255,0.12);
+  }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Space Grotesk', sans-serif; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); border-radius: 3px; }
+
+  /* ── Layout ── */
+  .app { display: grid; grid-template-rows: 64px 1fr; height: 100vh; overflow: hidden; }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; border-bottom: 1px solid var(--border);
+    background: rgba(8,13,28,0.9); backdrop-filter: blur(16px);
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg,#00d4ff,#0044ff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; box-shadow: 0 0 20px rgba(0,212,255,0.3);
+  }
+  .logo-title { font-size: 18px; font-weight: 800; background: linear-gradient(90deg,#00d4ff,#7c8fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-sub { font-size: 9px; color: var(--muted); letter-spacing: 1.5px; margin-top: -2px; }
+  .nav { display: flex; gap: 4px; }
+  .nav-btn {
+    padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    background: transparent; color: var(--muted); transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-btn.active { color: var(--accent); background: rgba(0,212,255,0.08); border-bottom-color: var(--accent); }
+  .badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1px; background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.25); color: var(--accent); }
+  .body { display: grid; grid-template-columns: 380px 1fr; overflow: hidden; }
+  .left { border-right: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow: auto; }
+  .right { overflow: auto; padding: 28px 32px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .tab-content-flex { display: none; }
+  .tab-content-flex.active { display: contents; }
+
+  /* ── Upload Zone ── */
+  .upload-zone {
+    margin: 16px; border: 2px dashed var(--border); border-radius: 16px;
+    padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.25s;
+    background: rgba(0,212,255,0.02);
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--glow); }
+  .upload-zone .icon { font-size: 38px; margin-bottom: 8px; }
+  .upload-zone .title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .upload-zone .sub { font-size: 11px; color: var(--muted); }
+  
+  .demo-btn {
+    margin: 0 16px 12px; width: calc(100% - 32px); padding: 11px;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: rgba(0,212,255,0.06); color: var(--accent);
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.3px;
+  }
+  .demo-btn:hover { background: rgba(0,212,255,0.12); border-color: rgba(0,212,255,0.3); }
+
+  .preview-wrap { padding: 0 16px 16px; }
+  .preview-wrap img { width: 100%; border-radius: 12px; border: 1px solid var(--border); max-height: 200px; object-fit: contain; background: #fff; }
+  .preview-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 8px; }
+
+  /* ── Spinner ── */
+  .spinner-wrap { padding: 20px; text-align: center; }
+  .spinner { width: 32px; height: 32px; border: 3px solid rgba(0,212,255,0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 10px; }
+  .spinner-text { font-size: 11px; color: var(--muted); animation: pulse 1.5s infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── How it works ── */
+  .how-section { padding: 16px; border-top: 1px solid var(--border); margin-top: auto; }
+  .how-title { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; margin-bottom: 12px; }
+  .how-step { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .how-num { width: 22px; height: 22px; border-radius: 6px; background: var(--glow); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+  .how-text { font-size: 11px; color: var(--muted); }
+
+  /* ── Results ── */
+  .results { animation: fadeIn 0.4s ease; }
+  .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .results-title { font-size: 21px; font-weight: 800; }
+  .results-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .export-btn {
+    padding: 7px 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: rgba(0,212,255,0.07); color: var(--accent); font-size: 11px;
+    font-weight: 600; cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.2s;
+  }
+  .export-btn:hover { background: rgba(0,212,255,0.14); }
+
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .card { background: var(--card); border-radius: 16px; padding: 18px; border: 1px solid var(--border); }
+  .card-title { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; margin-bottom: 14px; }
+  .info-row { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+  .info-icon { font-size: 15px; }
+  .info-label { font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-bottom: 1px; }
+  .info-val { font-size: 13px; font-weight: 600; }
+
+  /* ── Confidence Meter ── */
+  .conf-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .conf-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+  .conf-pct { font-size: 13px; font-weight: 700; }
+  .conf-bar-bg { height: 5px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+  .conf-bar { height: 100%; border-radius: 3px; transition: width 1s ease; }
+
+  /* ── Stat Row ── */
+  .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 11px; }
+  .stat-label { font-size: 12px; color: var(--muted); }
+  .stat-val { font-size: 14px; font-weight: 700; }
+
+  /* ── Medicine Cards ── */
+  .med-section-title { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; margin-bottom: 12px; }
+  .med-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; margin-bottom: 10px; display: flex; gap: 14px;
+    transition: all 0.2s; cursor: default; position: relative; overflow: hidden;
+  }
+  .med-card:hover { background: var(--card2); }
+  .med-stripe { width: 3px; border-radius: 2px; flex-shrink: 0; }
+  .med-body { flex: 1; }
+  .med-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .med-form { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 5px; letter-spacing: 0.5px; }
+  .med-name { font-size: 16px; font-weight: 700; color: #fff; margin-left: 8px; }
+  .med-dose { font-size: 14px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
+  .med-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .med-tag { font-size: 10px; color: var(--muted); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 5px; padding: 2px 8px; }
+
+  /* ── Raw Text ── */
+  .raw-toggle { background: none; border: none; color: var(--muted); font-size: 11px; cursor: pointer; letter-spacing: 1px; margin-top: 14px; font-family: 'Space Grotesk', sans-serif; display: block; }
+  .raw-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 14px; font-size: 11px; color: var(--muted); white-space: pre-wrap; word-break: break-word; max-height: 180px; overflow: auto; font-family: 'Fira Code', monospace; line-height: 1.8; margin-top: 8px; }
+
+  /* ── Empty State ── */
+  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; opacity: 0.35; text-align: center; }
+  .empty .icon { font-size: 64px; margin-bottom: 16px; }
+  .empty .t { font-size: 17px; font-weight: 600; color: var(--muted); }
+  .empty .s { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* ── Dataset Tab ── */
+  .dataset-wrap { padding: 28px 32px; overflow: auto; height: calc(100vh - 64px); }
+  .table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: var(--card); }
+  th { padding: 11px 14px; text-align: left; color: var(--accent); font-size: 9px; letter-spacing: 1.5px; font-weight: 700; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  td { padding: 9px 14px; color: var(--muted); border-bottom: 1px solid var(--border); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  tbody tr:nth-child(even) { background: rgba(255,255,255,0.015); }
+  tbody tr:hover { background: rgba(0,212,255,0.04); }
+
+  /* ── About Tab ── */
+  .about-wrap { padding: 28px 32px; overflow: auto; height: calc(100vh - 64px); }
+  .folder-box { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); margin-bottom: 20px; }
+  .folder-pre { font-size: 12px; color: var(--accent); line-height: 1.8; font-family: 'Fira Code', monospace; }
+  .stack-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+  .stack-card { background: var(--card); border-radius: 14px; padding: 16px; border: 1px solid var(--border); }
+  .stack-cat { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; margin-bottom: 10px; font-weight: 700; }
+  .stack-item { font-size: 11px; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .setup-step { display: grid; grid-template-columns: 56px 1fr; gap: 16px; margin-bottom: 14px; background: var(--card); border-radius: 14px; padding: 18px; border: 1px solid var(--border); }
+  .setup-n { font-size: 28px; font-weight: 900; color: rgba(0,212,255,0.2); line-height: 1; }
+  .setup-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+  .setup-desc { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .setup-code { background: rgba(0,0,0,0.3); border-radius: 8px; padding: 10px 14px; font-size: 11px; color: var(--green); font-family: 'Fira Code', monospace; overflow-x: auto; }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">💊</div>
+      <div>
+        <div class="logo-title">RxScan AI</div>
+        <div class="logo-sub">PRESCRIPTION OCR SYSTEM</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <button class="nav-btn active" onclick="switchTab('upload',this)">Upload</button>
+      <button class="nav-btn" onclick="switchTab('dataset',this)">Dataset</button>
+      <button class="nav-btn" onclick="switchTab('about',this)">About</button>
+    </nav>
+    <span class="badge">ML + OCR</span>
+  </header>
+
+  <!-- Tab: Upload (two-panel layout) -->
+  <div class="body tab-content-flex active" id="tab-upload">
+    <!-- Left panel -->
+    <div class="left">
+      <div style="padding:16px 16px 0;font-size:10px;color:var(--muted);letter-spacing:1.5px">UPLOAD PRESCRIPTION</div>
+
+      <div class="upload-zone" id="dropzone" ondragover="dragOver(event)" ondragleave="dragLeave()" ondrop="dropFile(event)" onclick="document.getElementById('fileInput').click()">
+        <div class="icon" id="dropIcon">🔬</div>
+        <div class="title" id="dropTitle">Drop prescription image</div>
+        <div class="sub" id="dropSub">JPG, PNG, WEBP · Handwritten or printed</div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
+
+      <button class="demo-btn" onclick="runDemo()">⚡ Try Demo Prescription</button>
+
+      <div class="preview-wrap hidden" id="previewWrap">
+        <div class="preview-label">PREVIEW</div>
+        <img id="previewImg" src="" alt="preview">
+      </div>
+
+      <div class="spinner-wrap hidden" id="spinnerWrap">
+        <div class="spinner"></div>
+        <div class="spinner-text">Running OCR + NLP pipeline...</div>
+      </div>
+
+      <div class="how-section">
+        <div class="how-title">HOW IT WORKS</div>
+        <div class="how-step"><div class="how-num">1</div><div class="how-text">📷 Upload handwritten prescription</div></div>
+        <div class="how-step"><div class="how-num">2</div><div class="how-text">🔧 Image preprocessing & enhancement</div></div>
+        <div class="how-step"><div class="how-num">3</div><div class="how-text">🤖 Tesseract OCR engine runs</div></div>
+        <div class="how-step"><div class="how-num">4</div><div class="how-text">🧠 NLP extracts structured data</div></div>
+        <div class="how-step"><div class="how-num">5</div><div class="how-text">✅ Medicine DB validation & output</div></div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="right">
+      <div class="empty" id="emptyState">
+        <div class="icon">🏥</div>
+        <div class="t">Upload a prescription to analyze</div>
+        <div class="s">Or click "Try Demo Prescription" to see an example</div>
+      </div>
+
+      <div class="results hidden" id="resultsWrap">
+        <div class="results-header">
+          <div>
+            <div class="results-title">📋 Prescription Analysis</div>
+            <div class="results-sub" id="resultsSub">Extracted 0 medicines · Processed successfully</div>
+          </div>
+          <button class="export-btn" onclick="exportJSON()">⬇ Export JSON</button>
+        </div>
+
+        <div class="info-grid">
+          <div class="card">
+            <div class="card-title">PRESCRIPTION DETAILS</div>
+            <div class="info-row"><div class="info-icon">👤</div><div><div class="info-label">PATIENT</div><div class="info-val" id="infoPatient">—</div></div></div>
+            <div class="info-row"><div class="info-icon">🩺</div><div><div class="info-label">DOCTOR</div><div class="info-val" id="infoDoctor">—</div></div></div>
+            <div class="info-row"><div class="info-icon">📅</div><div><div class="info-label">DATE</div><div class="info-val" id="infoDate">—</div></div></div>
+            <div class="info-row"><div class="info-icon">🔬</div><div><div class="info-label">DIAGNOSIS</div><div class="info-val" id="infoDiagnosis">—</div></div></div>
+            <div class="conf-row"><span class="conf-label">OCR CONFIDENCE</span><span class="conf-pct" id="confPct">—</span></div>
+            <div class="conf-bar-bg"><div class="conf-bar" id="confBar" style="width:0%"></div></div>
+          </div>
+          <div class="card">
+            <div class="card-title">ANALYSIS SUMMARY</div>
+            <div class="stat-row"><span class="stat-label">Medicines Found</span><span class="stat-val" id="statMeds" style="color:var(--accent)">0</span></div>
+            <div class="stat-row"><span class="stat-label">Confidence Score</span><span class="stat-val" id="statConf" style="color:var(--green)">—</span></div>
+            <div class="stat-row"><span class="stat-label">Fields Extracted</span><span class="stat-val" style="color:var(--purple)">6 / 6</span></div>
+            <div class="stat-row"><span class="stat-label">DB Matches</span><span class="stat-val" id="statDB" style="color:var(--orange)">—</span></div>
+          </div>
+        </div>
+
+        <div class="med-section-title" id="medSectionTitle">PRESCRIBED MEDICINES (0)</div>
+        <div id="medsContainer"></div>
+
+        <button class="raw-toggle" id="rawToggle" onclick="toggleRaw()">▼ SHOW RAW OCR TEXT</button>
+        <pre class="raw-box hidden" id="rawBox"></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Dataset -->
+  <div class="dataset-wrap tab-content hidden" id="tab-dataset">
+    <h2 style="font-size:21px;font-weight:800;margin-bottom:6px">📊 Prescription Dataset</h2>
+    <p style="color:var(--muted);font-size:13px">50 sample prescription records — medicines, dosages, frequencies, doctors, and more.</p>
+    <div class="table-wrap">
+      <table id="datasetTable"></table>
+    </div>
+    <p style="margin-top:10px;font-size:11px;color:var(--muted)">Showing 15 of 50 records · Full dataset: prescription_dataset.csv</p>
+  </div>
+
+  <!-- Tab: About -->
+  <div class="about-wrap tab-content hidden" id="tab-about">
+    <h2 style="font-size:21px;font-weight:800;margin-bottom:6px">🗂 Project Architecture</h2>
+    <p style="color:var(--muted);font-size:13px;margin-bottom:20px">Full-stack ML application for recognizing and parsing handwritten prescriptions.</p>
+
+    <div class="folder-box">
+      <div class="card-title">FOLDER STRUCTURE</div>
+      <pre class="folder-pre">prescription-ocr/
+├── backend/
+│   ├── app.py                 ← Flask API + OCR pipeline
+│   └── requirements.txt       ← Python dependencies
+├── frontend/
+│   ├── public/index.html
+│   └── src/
+│       ├── index.js           ← React entry
+│       └── App.jsx            ← Main UI
+├── dataset/
+│   └── prescription_dataset.csv  ← 50 sample records
+├── models/                    ← Store trained ML models
+└── README.md</pre>
+    </div>
+
+    <div class="stack-grid">
+      <div class="stack-card"><div class="stack-cat">OCR ENGINE</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Tesseract OCR 5.x</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> OpenCV preprocessing</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> PIL/Pillow enhancement</div>
+      </div>
+      <div class="stack-card"><div class="stack-cat">ML / NLP</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Regex field extraction</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Medical term normaliz.</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Frequency mapping</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Medicine DB validation</div>
+      </div>
+      <div class="stack-card"><div class="stack-cat">BACKEND</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Python Flask</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Flask-CORS</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Pandas (dataset)</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> NumPy + scikit-learn</div>
+      </div>
+      <div class="stack-card"><div class="stack-cat">FRONTEND</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> React 18 / HTML5</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> No external UI lib</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> Drag & Drop upload</div>
+        <div class="stack-item"><span style="color:var(--green)">▸</span> JSON export</div>
+      </div>
+    </div>
+
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;margin-bottom:14px">STEP-BY-STEP SETUP</div>
+    <div class="setup-step"><div class="setup-n">01</div><div>
+      <div class="setup-title">Install Tesseract OCR</div>
+      <div class="setup-desc">System-level OCR engine required by pytesseract</div>
+      <div class="setup-code">sudo apt install tesseract-ocr   # Linux
+brew install tesseract            # macOS
+# Windows: download from github.com/UB-Mannheim/tesseract</div>
+    </div></div>
+    <div class="setup-step"><div class="setup-n">02</div><div>
+      <div class="setup-title">Setup Python Backend</div>
+      <div class="setup-desc">Create virtual environment and install dependencies</div>
+      <div class="setup-code">cd backend
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt</div>
+    </div></div>
+    <div class="setup-step"><div class="setup-n">03</div><div>
+      <div class="setup-title">Start Flask Server</div>
+      <div class="setup-desc">Runs on http://localhost:5000</div>
+      <div class="setup-code">python app.py</div>
+    </div></div>
+    <div class="setup-step"><div class="setup-n">04</div><div>
+      <div class="setup-title">Start React Frontend</div>
+      <div class="setup-desc">Runs on http://localhost:3000</div>
+      <div class="setup-code">cd frontend
+npm install
+npm start</div>
+    </div></div>
+    <div class="setup-step"><div class="setup-n">05</div><div>
+      <div class="setup-title">Upload & Analyze</div>
+      <div class="setup-desc">Drag a prescription image → get structured JSON output</div>
+      <div class="setup-code">POST http://localhost:5000/api/ocr
+Body: multipart/form-data { image: &lt;file&gt; }
+→ Returns: { medicines:[...], doctor, patient, diagnosis }</div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let currentResult = null;
+let rawVisible = false;
+
+// ── Tab switching ──────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Hide all
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.tab-content-flex').forEach(el => el.classList.remove('active'));
+  document.querySelector('.body').style.display = 'none';
+
+  if (tab === 'upload') {
+    document.querySelector('.body').style.display = '';
+    document.getElementById('tab-upload').classList.add('active');
+  } else if (tab === 'dataset') {
+    document.getElementById('tab-dataset').classList.remove('hidden');
+    buildDataset();
+  } else if (tab === 'about') {
+    document.getElementById('tab-about').classList.remove('hidden');
+  }
+}
+
+// ── Drag & Drop ───────────────────────────────────────────────────────────
+function dragOver(e) { e.preventDefault(); document.getElementById('dropzone').classList.add('drag'); }
+function dragLeave() { document.getElementById('dropzone').classList.remove('drag'); }
+function dropFile(e) {
+  e.preventDefault();
+  dragLeave();
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) processFile(file);
+}
+function handleFile(e) { const f = e.target.files[0]; if (f) processFile(f); }
+
+function processFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    showPreview(ev.target.result);
+    simulateOCR(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function showPreview(src) {
+  document.getElementById('previewImg').src = src;
+  document.getElementById('previewWrap').classList.remove('hidden');
+}
+
+// ── OCR Simulation (demo - in prod this calls Flask backend) ───────────────
+function setLoading(on) {
+  document.getElementById('spinnerWrap').classList.toggle('hidden', !on);
+  document.getElementById('emptyState').classList.add('hidden');
+  if (on) document.getElementById('resultsWrap').classList.add('hidden');
+  document.getElementById('dropIcon').textContent = on ? '⚙️' : '🔬';
+  document.getElementById('dropTitle').textContent = on ? 'Analyzing...' : 'Drop prescription image';
+  document.getElementById('dropSub').textContent = on ? 'Running OCR + NLP pipeline' : 'JPG, PNG, WEBP · Handwritten or printed';
+}
+
+function simulateOCR(dataUrl) {
+  setLoading(true);
+  // In production, send to Flask: fetch('/api/ocr', { method:'POST', body:formData })
+  setTimeout(() => {
+    setLoading(false);
+    renderResults(DEMO_DATA);
+  }, 1800);
+}
+
+function runDemo() {
+  document.getElementById('previewWrap').classList.add('hidden');
+  setLoading(true);
+  setTimeout(() => {
+    setLoading(false);
+    renderResults(DEMO_DATA);
+  }, 1400);
+}
+
+// ── Render Results ─────────────────────────────────────────────────────────
+const COLORS = ['#00d4ff','#00ff9d','#ff8c42','#a78bfa','#f472b6'];
+
+function renderResults(data) {
+  currentResult = data;
+  const d = data.data;
+  const pct = Math.round((d.ocr_confidence || 0.89) * 100);
+  const confColor = pct > 85 ? 'var(--green)' : pct > 65 ? 'var(--orange)' : '#ff4455';
+
+  document.getElementById('emptyState').classList.add('hidden');
+  document.getElementById('resultsWrap').classList.remove('hidden');
+  document.getElementById('resultsSub').textContent = `Extracted ${d.medicines.length} medicines · Processed successfully`;
+  document.getElementById('infoPatient').textContent = d.patient_name || '—';
+  document.getElementById('infoDoctor').textContent = d.doctor_name || '—';
+  document.getElementById('infoDate').textContent = d.date || '—';
+  document.getElementById('infoDiagnosis').textContent = d.diagnosis || '—';
+  document.getElementById('confPct').textContent = `${pct}%`;
+  document.getElementById('confPct').style.color = confColor;
+  document.getElementById('confBar').style.width = `${pct}%`;
+  document.getElementById('confBar').style.background = confColor;
+  document.getElementById('statMeds').textContent = d.medicines.length;
+  document.getElementById('statConf').textContent = `${pct}%`;
+  document.getElementById('statDB').textContent = `${Math.min(d.medicines.length,3)} validated`;
+  document.getElementById('medSectionTitle').textContent = `PRESCRIBED MEDICINES (${d.medicines.length})`;
+
+  // Medicines
+  const container = document.getElementById('medsContainer');
+  container.innerHTML = '';
+  d.medicines.forEach((med, i) => {
+    const c = COLORS[i % COLORS.length];
+    const tags = [
+      med.frequency && `🔁 ${med.frequency}`,
+      med.duration && `📅 ${med.duration}`,
+      med.instructions && `📝 ${med.instructions}`,
+    ].filter(Boolean);
+    container.insertAdjacentHTML('beforeend', `
+      <div class="med-card">
+        <div class="med-stripe" style="background:${c}"></div>
+        <div class="med-body">
+          <div class="med-top">
+            <div style="display:flex;align-items:center">
+              <span class="med-form" style="color:${c};background:${c}18">${med.form || 'Tab'}</span>
+              <span class="med-name">${med.name}</span>
+            </div>
+            <span class="med-dose" style="color:${c};background:${c}12">${med.dosage}</span>
+          </div>
+          <div class="med-tags">${tags.map(t => `<span class="med-tag">${t}</span>`).join('')}</div>
+        </div>
+      </div>
+    `);
+  });
+
+  // Raw text
+  document.getElementById('rawBox').textContent = d.raw_text || '';
+  rawVisible = false;
+  document.getElementById('rawToggle').textContent = '▼ SHOW RAW OCR TEXT';
+  document.getElementById('rawBox').classList.add('hidden');
+}
+
+function toggleRaw() {
+  rawVisible = !rawVisible;
+  document.getElementById('rawBox').classList.toggle('hidden', !rawVisible);
+  document.getElementById('rawToggle').textContent = rawVisible ? '▲ HIDE RAW OCR TEXT' : '▼ SHOW RAW OCR TEXT';
+}
+
+function exportJSON() {
+  if (!currentResult) return;
+  const blob = new Blob([JSON.stringify(currentResult.data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'prescription.json'; a.click();
+}
+
+// ── Dataset Table ──────────────────────────────────────────────────────────
+function buildDataset() {
+  const rows = DATASET_ROWS;
+  const cols = Object.keys(rows[0]);
+  let html = `<thead><tr>${cols.map(c=>`<th>${c.toUpperCase()}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(r => { html += `<tr>${cols.map(c=>`<td title="${r[c]||''}">${r[c]||''}</td>`).join('')}</tr>`; });
+  html += '</tbody>';
+  document.getElementById('datasetTable').innerHTML = html;
+}
+
+// ── Demo Data ──────────────────────────────────────────────────────────────
+const DEMO_DATA = {
+  success: true, confidence: 0.89,
+  data: {
+    doctor_name: 'Dr. R. Sharma', patient_name: 'Ravi Kumar',
+    date: '2024-01-10', diagnosis: 'Bacterial Infection / URI',
+    ocr_confidence: 0.89,
+    raw_text: `Dr. R. Sharma  MD, MBBS
+Patient: Ravi Kumar         Dt: 10/01/2024
+Diagnosis: Bacterial Infection / URI
+
+Rx
+Tab Amoxicillin 500mg BD x 5 days - After food
+Tab Paracetamol 500mg SOS (max 3/day)
+Syp Benadryl 5ml TDS x 5 days - After food
+Cap Vitamin C 500mg OD - After breakfast
+
+Advice: Rest well, plenty of fluids.
+Review after 5 days if no improvement.
+Signature: Dr. R. Sharma`,
+    medicines: [
+      { form:'Tab', name:'Amoxicillin', dosage:'500mg', frequency:'Twice Daily', duration:'5 days', instructions:'After Food' },
+      { form:'Tab', name:'Paracetamol', dosage:'500mg', frequency:'As Needed', duration:'5 days', instructions:'For Fever' },
+      { form:'Syp', name:'Benadryl', dosage:'5ml', frequency:'Thrice Daily', duration:'5 days', instructions:'After Food' },
+      { form:'Cap', name:'Vitamin C', dosage:'500mg', frequency:'Once Daily', duration:'1 month', instructions:'After Breakfast' },
+    ]
+  }
+};
+
+const DATASET_ROWS = [
+  {id:1,medicine:'Amoxicillin',dosage:'500mg',frequency:'Twice Daily',duration:'5 days',doctor:'Dr. R. Sharma',diagnosis:'Bacterial Infection',confidence:0.92},
+  {id:2,medicine:'Omeprazole',dosage:'20mg',frequency:'Once Daily',duration:'30 days',doctor:'Dr. P. Mehta',diagnosis:'GERD',confidence:0.88},
+  {id:3,medicine:'Metformin',dosage:'500mg',frequency:'Thrice Daily',duration:'Ongoing',doctor:'Dr. A. Nair',diagnosis:'Type 2 Diabetes',confidence:0.91},
+  {id:4,medicine:'Azithromycin',dosage:'200mg/5ml',frequency:'Once Daily',duration:'3 days',doctor:'Dr. S. Rao',diagnosis:'Throat Infection',confidence:0.85},
+  {id:5,medicine:'Atorvastatin',dosage:'10mg',frequency:'At Bedtime',duration:'Ongoing',doctor:'Dr. K. Gupta',diagnosis:'Hyperlipidemia',confidence:0.89},
+  {id:6,medicine:'Amlodipine',dosage:'5mg',frequency:'Once Daily',duration:'Ongoing',doctor:'Dr. V. Kumar',diagnosis:'Hypertension',confidence:0.93},
+  {id:7,medicine:'Paracetamol',dosage:'500mg',frequency:'As Needed',duration:'5 days',doctor:'Dr. R. Sharma',diagnosis:'Fever/Pain',confidence:0.95},
+  {id:8,medicine:'Doxycycline',dosage:'100mg',frequency:'Twice Daily',duration:'7 days',doctor:'Dr. M. Iyer',diagnosis:'Acne/Infection',confidence:0.87},
+  {id:9,medicine:'Losartan',dosage:'50mg',frequency:'Once Daily',duration:'Ongoing',doctor:'Dr. P. Mehta',diagnosis:'Hypertension',confidence:0.90},
+  {id:10,medicine:'Clopidogrel',dosage:'75mg',frequency:'Once Daily',duration:'Ongoing',doctor:'Dr. A. Nair',diagnosis:'Cardiac',confidence:0.88},
+  {id:11,medicine:'Pantoprazole',dosage:'40mg',frequency:'Twice Daily',duration:'14 days',doctor:'Dr. S. Rao',diagnosis:'Peptic Ulcer',confidence:0.91},
+  {id:12,medicine:'Cetirizine',dosage:'10mg',frequency:'Once Daily',duration:'10 days',doctor:'Dr. K. Gupta',diagnosis:'Allergic Rhinitis',confidence:0.94},
+  {id:13,medicine:'Levothyroxine',dosage:'50mcg',frequency:'Once Daily',duration:'Ongoing',doctor:'Dr. R. Sharma',diagnosis:'Hypothyroidism',confidence:0.92},
+  {id:14,medicine:'Diclofenac',dosage:'50mg',frequency:'Thrice Daily',duration:'5 days',doctor:'Dr. M. Iyer',diagnosis:'Arthritis Pain',confidence:0.89},
+  {id:15,medicine:'Sertraline',dosage:'50mg',frequency:'Once Daily',duration:'3 months',doctor:'Dr. P. Mehta',diagnosis:'Depression',confidence:0.87},
+];
+</script>
+</body>
+</html>

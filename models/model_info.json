@@ -1,0 +1,77 @@
+{
+  "trained_at": "2026-02-19T21:56:53.135617",
+  "dataset_size": 100000,
+  "models": {
+    "medicine_classifier": {
+      "accuracy": 0.71,
+      "classes": 100,
+      "train_samples": 64362,
+      "test_samples": 16091,
+      "algorithm": "TF-IDF + Logistic Regression (multinomial)",
+      "features": 30000,
+      "ngram_range": "1-2"
+    },
+    "diagnosis_predictor": {
+      "accuracy": 0.0201,
+      "classes": 50,
+      "train_samples": 74327,
+      "test_samples": 18582,
+      "algorithm": "TF-IDF + Logistic Regression (multinomial)",
+      "features": 20000,
+      "input_features": [
+        "medicine_name",
+        "form",
+        "frequency",
+        "dosage",
+        "all_medicines"
+      ]
+    },
+    "ner_extractor": {
+      "type": "Hybrid (Regex + TF-IDF char n-gram classifier)",
+      "entities": [
+        "form",
+        "dosage",
+        "frequency",
+        "duration",
+        "doctor",
+        "patient",
+        "date",
+        "diagnosis"
+      ],
+      "medicine_vocab_size": 126,
+      "frequency_vocab_size": 6,
+      "pattern_rules": 8,
+      "medicine_detector": "char n-gram TF-IDF + Logistic Regression"
+    },
+    "confidence_scorer": {
+      "algorithm": "Gradient Boosting Regressor",
+      "mae": 0.0652,
+      "r2_score": -0.0051,
+      "n_estimators": 200,
+      "features": [
+        "text_length",
+        "word_count",
+        "field_count",
+        "has_doctor",
+        "has_patient_label",
+        "has_date",
+        "has_mg_dosage",
+        "has_freq_abbr",
+        "has_rx",
+        "has_diagnosis",
+        "med_in_text",
+        "newline_count",
+        "dosage_count",
+        "form_count",
+        "has_signature",
+        "type_token_ratio",
+        "uppercase_ratio",
+        "digit_ratio",
+        "has_advice",
+        "has_unit"
+      ],
+      "train_samples": 80000,
+      "test_samples": 20000
+    }
+  }
+}
