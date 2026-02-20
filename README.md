@@ -1,141 +1,133 @@
-🧠 Prescription OCR — Doctor Handwritten Text Recognition System
+# 🧠 Prescription OCR — Doctor Handwritten Text Recognition System
 
-An AI-powered web application that extracts, analyzes, and predicts information from doctor prescriptions using Machine Learning, OCR, and NLP.
+An AI-powered web application that extracts and analyzes information from doctor prescriptions using Machine Learning, OCR concepts, and NLP techniques.
 
-🚀 Project Overview
+---
 
-Prescription OCR is designed to digitize handwritten medical prescriptions by detecting and extracting:
+## 🚀 Project Overview
 
-🩺 Patient diagnosis
+Prescription OCR digitizes handwritten medical prescriptions by detecting and extracting:
 
-💊 Medicines
+- Patient diagnosis
+- Prescribed medicines
+- Named medical entities
+- Prediction confidence score
 
-📊 Confidence score
+This system helps reduce manual errors and supports digital healthcare record management.
 
-🧾 Structured medical data
+---
 
-This system helps reduce manual errors, improves record keeping, and assists in digital healthcare workflows.
+## ✨ Features
 
-🏗️ Project Architecture
-Frontend (React)  →  Backend (Flask API)  →  ML Models  →  Prediction Output
-✨ Features
+- Handwritten prescription text processing
+- Medicine classification
+- Diagnosis prediction
+- Named Entity Recognition (NER)
+- Confidence scoring
+- Web-based user interface
+- End-to-end ML pipeline
 
-✔ Handwritten prescription text extraction
-✔ Medicine name classification
-✔ Diagnosis prediction
-✔ Named Entity Recognition (NER)
-✔ Confidence scoring
-✔ User-friendly web interface
-✔ End-to-end ML pipeline
+---
 
-🛠️ Technologies Used
-🔹 Frontend
+## 🛠️ Technologies Used
 
-React.js
+### Frontend
+- React.js
+- HTML
+- CSS
+- JavaScript
 
-HTML
+### Backend
+- Python
+- Flask
 
-CSS
+### Machine Learning
+- Scikit-learn
+- Pandas
+- NumPy
+- NLP techniques
 
-JavaScript
+---
 
-🔹 Backend
+## 📂 Project Structure
+prescription-ocr/---
 
-Python
+## ⚙️ Installation & Setup
 
-Flask
+### 1. Clone Repository
 
-🔹 Machine Learning
 
-Scikit-learn
-
-Pandas
-
-NumPy
-
-NLP techniques
-
-🔹 Models Included
-
-Medicine Classifier
-
-Diagnosis Predictor
-
-NER Extractor
-
-Confidence Scorer
-
-📂 Project Structure
-prescription-ocr/
-│
-├── backend/                # Flask API
-├── frontend/               # React App
-├── dataset/                # Training datasets
-├── models/                 # Trained ML models
-├── train_models.py         # Model training script
-├── rxscan-ai-demo.html     # Demo page
-└── README.md
-⚙️ Installation & Setup
-1️⃣ Clone Repository
 git clone https://github.com/your-username/prescription-ocr.git
+
 cd prescription-ocr
-2️⃣ Backend Setup
+
+
+---### 2. Backend Setup
+
+
 cd backend
 pip install -r requirements.txt
 python app.py
 
-Backend runs at:
 
-http://localhost:5000
-3️⃣ Frontend Setup
+Backend will run at: http://localhost:5000
+
+---
+
+### 3. Frontend Setup
+
+
 cd frontend
 npm install
 npm start
 
-Frontend runs at:
 
-http://localhost:3000
-🧪 Model Training
+Frontend will run at: http://localhost:3000
 
-To retrain models:
+---
+
+## 🧪 Model Training
+
+To retrain the models:
+
 
 python train_models.py
-📊 Dataset
 
-The dataset contains labeled prescription data including:
 
-Medicine names
+---
 
-Diagnosis labels
+## 📊 Dataset
 
-Extracted entities
+The dataset includes labeled prescription data such as medicine names, diagnosis labels, and extracted entities.
 
-🎯 Use Cases
+---
 
-🏥 Hospitals
-💊 Pharmacies
-🧑‍⚕️ Doctors
-📋 Medical record digitization
-🧠 Healthcare AI research
+## 🎯 Use Cases
 
-🔮 Future Improvements
+- Hospitals and clinics
+- Pharmacies
+- Medical record digitization
+- Healthcare AI research
 
-Deep Learning OCR integration
+---
 
-Real-time camera scanning
+## 🔮 Future Improvements
 
-Multi-language prescription support
+- Deep learning OCR integration
+- Real-time camera scanning
+- Multi-language support
+- Cloud deployment
+- Mobile application
 
-Cloud deployment
+---
 
-Mobile application
+## 👨‍💻 Author
 
-👨‍💻 Author
-
-Rajshekhar DK
+Rajshekhar DK  
 Computer Science Engineering Student
-AI & ML Enthusiast
 
-📜 License
+---
 
-This project is for educational and research purposes.
+## 📜 License
+
+This project is for educational and research purposes only.
