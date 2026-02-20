@@ -50,7 +50,7 @@ This system helps reduce manual errors and supports digital healthcare record ma
 ---
 
 ## 📂 Project Structure
-prescription-ocr/
+
 prescription-ocr/
 │
 ├── backend/ # Flask backend API
